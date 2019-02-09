@@ -8,13 +8,26 @@
 
 .main {
     display: flex;
-
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: pink;
     height: 100vh;
     width: 100vw;
 
+}
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    width: 40%;
+}
+
+.timer {
+    font-size: 40px;
+}
+
+.mines-left{
+    font-size: 40px;
 }
 
 #canvas {

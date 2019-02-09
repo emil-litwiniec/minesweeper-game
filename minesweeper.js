@@ -16,7 +16,8 @@ class Cell {
 }
 
 
-
+const mines = 80;
+// let mineCounter = mines;
 
 let minefield = [];
 
@@ -115,7 +116,7 @@ function createMines(minesAmount) {
     })
 }
 
-createMines(80);
+createMines(mines);
 
 scanAroundAndCountMines();
 function scanAroundAndCountMines() {
@@ -212,7 +213,7 @@ function scanAroundAndCountMines() {
 
 
 
-function scanAroundAndUnpressWhenNoMine(cell) {
+function scanAroundAndPressWhenNoMine(cell) {
         let row = cell.row ;
         let column = cell.column ;
         let prop = 'minesAmount';
@@ -222,40 +223,40 @@ function scanAroundAndUnpressWhenNoMine(cell) {
             if(row === 1 && column === 1) {
                 for(let i = row; i <= row + 1; i++){
                     for(let j = column; j <= column + 1; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
             } else if(row === 1 && column === 30) {
                 for(let i = row; i <= row + 1; i++){
                     for(let j = column - 1; j <= column; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
             } else if(row === 16 && column === 1) {
                 for(let i = row - 1; i <= row; i++){
                     for(let j = column; j <= column + 1; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
             } else if(row === 16 && column === 30) {
                 for(let i = row - 1; i <= row; i++){
                     for(let j = column - 1; j <= column; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
             }   else if(row === 1 && column < 30) {
                 for(let i = row; i <= row + 1; i++){
                     for(let j = column - 1; j <= column + 1; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
@@ -263,24 +264,24 @@ function scanAroundAndUnpressWhenNoMine(cell) {
             else if (row === 16) {
                 for(let i = row - 1; i <= row; i++){
                     for(let j = column - 1; j <= column + 1; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
             } else if (column === 1) {
                 for(let i = row - 1; i <= row + 1; i++){
                     for(let j = column; j <= column + 1; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 
             }} else if (column === 30) {
                 for(let i = row - 1; i <= row + 1; i++){
                     for(let j = column - 1; j <= column; j++){
-                        if(minefield[i-1][j-1][prop] !== propVal) {
-                            minefield[i-1][j-1]['pressed'] = true;
+                        if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
@@ -290,8 +291,7 @@ function scanAroundAndUnpressWhenNoMine(cell) {
                     for(let j = (column - 1); j <= column + 1; j++){
                         // minefield[i-1][j-1]['pressed'] = true;
                         if(minefield[i-1][j-1][prop] === propVal && minefield[i-1][j-1] !== cell && minefield[i-1][j-1].pressed === false) {
-                            console.log(`minefield: ${minefield[i-1][j-1].row}, ${minefield[i-1][j-1].column}, cell: ${cell.row}, ${cell.column}`);
-                            scanAroundAndUnpressWhenNoMine(minefield[i-1][j-1]);
+                            scanAroundAndPressWhenNoMine(minefield[i-1][j-1]);
                         }
                     }
                 }
@@ -378,8 +378,8 @@ const canvasPosition = {
 
 
 function pickCellWithMouse(e) {
+    console.log(e);     
 
-    // console.log(e);
     const mouseX = e.x; 
     const mouseY = e.y; 
     const canvasX = canvasPosition.x;
@@ -387,33 +387,92 @@ function pickCellWithMouse(e) {
     let cellX = mouseX - canvasX;
     let cellY = mouseY - canvasY;
 
-    // console.log('mouse', mouseX, mouseY);
-    // console.log('canvas', canvasX, canvasY);
-    // console.log('cell', cellX, cellY);
-
     minefield.forEach(row => row.forEach(cell => {
         if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
+
+            if(!cell.flagged){
             revealIfEmpty(cell);
             checkForPressed();
+            };
         }
     }))
 
 }
 
+function mineCounter() {
+     let flagCounter = 0;
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.flagged) {
+            flagCounter++;
+        }
+    }));
+
+    let minesLeft = mines - flagCounter;
+    return minesLeft;
+}
+
+function pickCellWithMouseRightClick(e) {
+    const mouseX = e.x; 
+    const mouseY = e.y; 
+    const canvasX = canvasPosition.x;
+    const canvasY = canvasPosition.y;
+    let cellX = mouseX - canvasX;
+    let cellY = mouseY - canvasY;
+
+    minefield.forEach(row => row.forEach(cell => {
+        if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
+
+            if(!cell.pressed){
+            toggleFlag(cell);
+            
+            setMinesLeftIndicator(mineCounter(cell));
+            drawFlag(cell);
+            };
+        }
+    }))
+
+}
+
+function toggleFlag(cell) {
+    console.log(cell);
+
+    cell.flagged = !cell.flagged;
+}
+
+function drawFlag(cell) {
+    if(cell.flagged){
+    createRect(cell, 'orange');
+    } else if(!cell.flagged) {
+        createRect(cell, '#f4f4f4');
+    }
+}
+
 function revealIfEmpty(cell) {
     if(!(cell.state === 'empty')) {
-        return;
-    } if (cell.state === 'empty' && cell.minesAmount === 0) {
-        scanAroundAndUnpressWhenNoMine(cell);
+        drawAllMines();
+        setTimeout(() => {
+            alert('BOOOOOOOOOOOOOOOOOOOOM! YOU DIE.');
+        }, 100);
+    } else if (cell.state === 'empty' && cell.minesAmount === 0) {
+        scanAroundAndPressWhenNoMine(cell);
+    } else if (cell.state === 'empty' && cell.minesAmount > 0) {
+        drawActive(cell);
+        cell.pressed = true;
     }
+}
+
+function drawAllMines() {
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.state === 'mine') {
+            drawActive(cell);
+        }
+    }))
 }
 
 function revealAround(cell) {
 
     let row = cell.row ;
     let column = cell.column ;
-    let prop = 'minesAmount';
-    let propVal = 0;
     cell.pressed = true;
     
         if(row === 1 && column === 1) {
@@ -466,11 +525,8 @@ function revealAround(cell) {
                 }
             }
         } else if (row > 1 && row < 16 && column > 1 && column < 30){
-            console.log('hey');
             for(let i = (row - 1); i <= row + 1; i++){
                 for(let j = (column - 1); j <= column + 1; j++){
-                    // minefield[i-1][j-1]['pressed'] = true;
-                        console.log(`minefield: ${minefield[i-1][j-1].row}, ${minefield[i-1][j-1].column}, cell: ${cell.row}, ${cell.column}`);
                         minefield[i-1][j-1]['pressed'] = true;
                 }
             }
@@ -482,4 +538,29 @@ function revealAround(cell) {
 
 canvas.addEventListener('click', (e) => pickCellWithMouse(e));
 
-console.log(canvasPosition.x, canvasPosition.y);
+window.oncontextmenu = (e) => {
+    e.preventDefault();
+    pickCellWithMouseRightClick(e);
+}
+
+const minesLeftIndicator = document.querySelector('.mines-left');
+
+function setMinesLeftIndicator (val) {
+    minesLeftIndicator.innerText = val;
+}
+setMinesLeftIndicator(mines);
+
+const timerIndicator = document.querySelector('.timer');
+
+
+
+
+let timer = 0;
+setInterval(() => {
+    timer++;
+    timerIndicator.innerText = timer;
+}, 1000);
+
+
+
+
