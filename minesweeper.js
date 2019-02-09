@@ -21,10 +21,10 @@ class Cell {
 let minefield = [];
 
 function createMinefield() {
-    for(let i = 0; i < 17; i++) {
+    for(let i = 0; i < 16; i++) {
         let rowArr = [];
     
-        for(let j = 0; j < 31; j++) {
+        for(let j = 0; j < 30; j++) {
             let coords = [gridSize * j, gridSize * i];
             let obj = new Cell(coords);
             obj.state = 'empty';
@@ -115,109 +115,111 @@ function createMines(minesAmount) {
 
 createMines(100);
 
+scanAround('state','mine','state','empty', 'state', 'mine');
 
-minefield.forEach(line => line.forEach(cell => {
-    counter = 0;
-    let row = cell.row - 1 ;
-    let column = cell.column - 1;
-    if(cell.state == "mine") {
-        return;
-    } else if (cell.state == "empty") {
-        console.log(cell);
-    }
+function scanAround(argForReturnWhere, argForReturnWhat, argForScanWhere,argForScanWhat, prop, searchedVal ) {
+    minefield.forEach(line => line.forEach(cell => {
+        console.log('Cell:', cell.row, cell.column);
+        // console.log(argForReturn);
+        counter = 0;
+        let row = cell.row ;
+        let column = cell.column ;
+        if(cell[argForReturnWhere] == argForReturnWhat) {
+            // console.log('bonk');
+            return;
+        } else if (cell[argForScanWhere] == argForScanWhat)    
+        {
+            if(row === 1 && column === 1) {
+                console.log('row = 1, col = 1')
+                for(let i = row; i <= row + 1; i++){
+                    for(let j = column; j <= column + 1; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } else if(row === 1 && column === 30) {
+                for(let i = row; i <= row + 1; i++){
+                    for(let j = column - 1; j <= column; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } else if(row === 16 && column === 1) {
+                for(let i = row - 1; i <= row; i++){
+                    for(let j = column; j <= column + 1; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } else if(row === 16 && column === 30) {
+                for(let i = row - 1; i <= row; i++){
+                    for(let j = column - 1; j <= column; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            }   else if(row === 1 && column < 30) {
+                for(let i = row; i <= row + 1; i++){
+                    for(let j = column - 1; j <= column + 1; j++){
+                        console.log('row === 1:',i, j);
     
-    
-    
-    
-    
-    /* {
-        if(row === 0 && column === 0) {
-            for(let i = row; i < row + 1; i++){
-                for(let j = column; j < column + 1; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } 
+            else if (row === 16) {
+                for(let i = row - 1; i <= row; i++){
+                    for(let j = column - 1; j <= column + 1; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } else if (column === 1) {
+                console.log('what:', cell);
+                for(let i = row - 1; i <= row + 1; i++){
+                    for(let j = column; j <= column + 1; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                
+            }} else if (column === 30) {
+                for(let i = row - 1; i <= row + 1; i++){
+                    for(let j = column - 1; j <= column; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            counter++;
+                        }
+                    }
+                }
+            } else if (row > 1 && row < 16 && column > 1 && column < 30){
+                console.log('hey');
+                for(let i = (row - 1); i <= row + 1; i++){
+                    for(let j = (column - 1); j <= column + 1; j++){
+                        if(minefield[i-1][j-1][prop] == searchedVal) {
+                            // console.log(row-1, row, row + 1);
+                            counter ++;
+                            // console.log(j);
+                        }
                     }
                 }
             }
-        } else if(row === 0 && column === 29) {
-            for(let i = row; i < row + 1; i++){
-                for(let j = column - 1; j < column; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        } else if(row === 15 && column === 0) {
-            for(let i = row - 1; i < row; i++){
-                for(let j = column; j < column + 1; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        } else if(row === 15 && column === 29) {
-            for(let i = row - 1; i < row; i++){
-                for(let j = column - 1; j < column; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        }   else if(row === 0) {
-            for(let i = row; i < row + 1; i++){
-                for(let j = column - 1; j < column + 1; j++){
-                    // console.log(i, j);
-
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        } 
-        else if (row === 15) {
-            for(let i = row - 1; i < row; i++){
-                for(let j = column - 1; j < column + 1; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        } else if (column === 0) {
-            for(let i = row - 1; i < row + 1; i++){
-                for(let j = column; j < column + 1; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
             
-        }} else if (column === 29) {
-            for(let i = row - 1; i < row + 1; i++){
-                for(let j = column - 1; j < column; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // counter++;
-                    }
-                }
-            }
-        } else {
-            // console.log('hey');
-            for(let i = (row - 1); i < row + 1; i++){
-                // console.log(counter);
-                // console.log(i);
-                for(let j = (column - 1); j < column + 1; j++){
-                    if(minefield[i][j]['state'] == 'mine') {
-                        // console.log(row-1, row, row + 1);
-                        counter ++;
-                        console.log(j);
-                    }
-                }
-            }
+            
+            cell.minesAround = counter;
         }
-        
-        
-        cell.minesAround = counter;
-    } */
+    
+    }));
+}
 
-}));
+
+
 
 
 
