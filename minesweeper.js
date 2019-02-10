@@ -1,13 +1,15 @@
 const canvas = document.getElementById('canvas');
+const timerIndicator = document.querySelector('.timer');
+const minesLeftIndicator = document.querySelector('.mines-left');
 
 const ctx = canvas.getContext('2d');
+const canvasPosition = {
+    x: window.canvas.offsetLeft,
+    y: window.canvas.offsetTop
+}
 
 const gridSize = 26;
-
-
-
-
-
+const mines = 80;
 class Cell { 
 
     constructor(coords) {
@@ -16,10 +18,64 @@ class Cell {
 }
 
 
-const mines = 80;
-// let mineCounter = mines;
-
 let minefield = [];
+let minesArr = [];
+let safeStartingArea = [];
+
+let testNumber = 39;
+let counter = 0;
+let timer = 0;
+createMinefield();
+drawMinefield();
+
+
+
+canvas.addEventListener('click', (e) => pickCellWithMouse(e));
+window.oncontextmenu = (e) => {
+    e.preventDefault();
+    pickCellWithMouseRightClick(e);
+}
+
+
+
+function play() {
+    createMines(mines);
+    scanAroundAndCountMines();
+
+    setMinesLeftIndicator(mines);
+    setInterval(() => {
+        timer++;
+        timerIndicator.innerText = timer;
+    }, 1000);
+};
+
+function createSafeStartingArea(cell) {
+    // let safeStartingArea = [];
+    for(let i = cell.row - 1; i <= cell.row + 1 ; i++) {
+        console.log('row'); 
+        if(minefield[i-1]) {
+            console.log('row after if')
+            for(let j = cell.column - 1; j <= cell.column + 1; j++) {
+                if(minefield[i-1][j-1]) {
+                    let coords = [i, j];
+                    let globalId;
+                    if(i < 2) {
+                        globalId = j;
+                    } else {
+                        globalId = ((i-1) * 30) + j;
+                    }
+                    safeStartingArea.push(globalId, coords);
+
+
+                }
+                
+            }
+
+        }
+    }
+};
+
+
 
 function createMinefield() {
     for(let i = 0; i < 16; i++) {
@@ -40,11 +96,11 @@ function createMinefield() {
     }
 }
 
-createMinefield();
+
 
 function getNewRandomNumber() {
     let randomNumber = getRandomInt(1, 480);
-    if(!minesArr.includes(randomNumber)) {
+    if(!minesArr.includes(randomNumber) && !safeStartingArea.includes(randomNumber)) {
         minesArr.push(randomNumber);
     } else {
         getNewRandomNumber();
@@ -57,18 +113,11 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-let minesArr = [];
 function createArrOfNumbers(number) {
     for(let i = 0; i < number; i++) {
         getNewRandomNumber();
     }
 }
-
-
-
-let testNumber = 39;
-let counter = 0;
 
 function recursiveRow(x) {
     if(x > 30) {
@@ -79,9 +128,6 @@ function recursiveRow(x) {
         counter++;
     }
 }
-
-
-
 
 function getCellRow (val) {
     recursiveRow(val);
@@ -116,9 +162,7 @@ function createMines(minesAmount) {
     })
 }
 
-createMines(mines);
 
-scanAroundAndCountMines();
 function scanAroundAndCountMines() {
     minefield.forEach(line => line.forEach(cell => {
         counter = 0;
@@ -286,7 +330,6 @@ function scanAroundAndPressWhenNoMine(cell) {
                     }
                 }
             } else if (row > 1 && row < 16 && column > 1 && column < 30){
-                console.log('hey');
                 for(let i = (row - 1); i <= row + 1; i++){
                     for(let j = (column - 1); j <= column + 1; j++){
                         // minefield[i-1][j-1]['pressed'] = true;
@@ -296,11 +339,7 @@ function scanAroundAndPressWhenNoMine(cell) {
                     }
                 }
             }
-            
             revealAround(cell);
-        
-    
-   
 }
 
 function createRect(cell, color) {
@@ -312,10 +351,6 @@ function createRect(cell, color) {
     ctx.strokeStyle = 'black';
     ctx.strokeRect(cell.coords[0] + 1, cell.coords[1] + 1, gridSize, gridSize);
     ctx.closePath();
-//     ctx.beginPath();
-//     ctx.fillStyle = 'blue';
-//     ctx.fillRect(cell.coords[0], cell.coords[1], gridSize - 5, gridSize - 5);
-//     ctx.closePath();
 };
 
 function drawActive(cell) {
@@ -366,50 +401,33 @@ function drawMinefield() {
     ));
 };
 
-drawMinefield();
-
-const canvasPosition = {
-    x: window.canvas.offsetLeft,
-    y: window.canvas.offsetTop
-}
 
 
-// let offsetCellPosition =  
+const ifNoMines = () => minefield.every(row => row.every(cell => cell.state == 'empty'));
+
+
 
 
 function pickCellWithMouse(e) {
-    console.log(e);     
-
     const mouseX = e.x; 
     const mouseY = e.y; 
     const canvasX = canvasPosition.x;
     const canvasY = canvasPosition.y;
     let cellX = mouseX - canvasX;
     let cellY = mouseY - canvasY;
-
     minefield.forEach(row => row.forEach(cell => {
         if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
-
+            if(ifNoMines()) {
+                createSafeStartingArea(cell);
+                play();
+            }
             if(!cell.flagged){
             revealIfEmpty(cell);
             checkForPressed();
             };
         }
     }))
-
-}
-
-function mineCounter() {
-     let flagCounter = 0;
-    minefield.forEach(row => row.forEach(cell => {
-        if(cell.flagged) {
-            flagCounter++;
-        }
-    }));
-
-    let minesLeft = mines - flagCounter;
-    return minesLeft;
-}
+};
 
 function pickCellWithMouseRightClick(e) {
     const mouseX = e.x; 
@@ -431,7 +449,21 @@ function pickCellWithMouseRightClick(e) {
         }
     }))
 
+};
+
+function mineCounter() {
+     let flagCounter = 0;
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.flagged) {
+            flagCounter++;
+        }
+    }));
+
+    let minesLeft = mines - flagCounter;
+    return minesLeft;
 }
+
+
 
 function toggleFlag(cell) {
     console.log(cell);
@@ -536,31 +568,8 @@ function revealAround(cell) {
         
 }
 
-canvas.addEventListener('click', (e) => pickCellWithMouse(e));
 
-window.oncontextmenu = (e) => {
-    e.preventDefault();
-    pickCellWithMouseRightClick(e);
-}
-
-const minesLeftIndicator = document.querySelector('.mines-left');
 
 function setMinesLeftIndicator (val) {
     minesLeftIndicator.innerText = val;
 }
-setMinesLeftIndicator(mines);
-
-const timerIndicator = document.querySelector('.timer');
-
-
-
-
-let timer = 0;
-setInterval(() => {
-    timer++;
-    timerIndicator.innerText = timer;
-}, 1000);
-
-
-
-
