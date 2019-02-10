@@ -3,15 +3,24 @@ const timerIndicator = document.querySelector('.timer');
 const minesLeftIndicator = document.querySelector('.mines-left');
 
 const ctx = canvas.getContext('2d');
+let numberOfRows = 16;
+let numberOfColumns = 25;
+
+let numberOfCells = numberOfRows * numberOfColumns;
+
+const gridSize = 23;
+const mines = 65;
+
+
+setCanvasDimensions();
+
 const canvasPosition = {
     x: window.canvas.offsetLeft,
     y: window.canvas.offsetTop
 }
 
-const gridSize = 26;
-const mines = 80;
 class Cell { 
-
+    
     constructor(coords) {
         this.coords = coords;
     }
@@ -41,7 +50,7 @@ window.oncontextmenu = (e) => {
 function play() {
     createMines(mines);
     scanAroundAndCountMines();
-
+    
     setMinesLeftIndicator(mines);
     setInterval(() => {
         timer++;
@@ -49,11 +58,16 @@ function play() {
     }, 1000);
 };
 
+function setCanvasDimensions() {
+    const canvasComputedWidth = numberOfColumns * gridSize;
+    const canvasComputedHeight = numberOfRows * gridSize;
+    canvas.width = canvasComputedWidth + 2;
+    canvas.height = canvasComputedHeight + 2;
+};
+
 function createSafeStartingArea(cell) {
     for(let i = cell.row - 1; i <= cell.row + 1 ; i++) {
-        console.log('row'); 
         if(minefield[i-1]) {
-            console.log('row after if')
             for(let j = cell.column - 1; j <= cell.column + 1; j++) {
                 if(minefield[i-1][j-1]) {
                     let coords = [i, j];
@@ -61,7 +75,7 @@ function createSafeStartingArea(cell) {
                     if(i < 2) {
                         globalId = j;
                     } else {
-                        globalId = ((i-1) * 30) + j;
+                        globalId = ((i-1) * numberOfColumns) + j;
                     }
                     safeStartingArea.push(globalId, coords);
 
@@ -77,10 +91,10 @@ function createSafeStartingArea(cell) {
 
 
 function createMinefield() {
-    for(let i = 0; i < 16; i++) {
+    for(let i = 0; i < numberOfRows; i++) {
         let rowArr = [];
     
-        for(let j = 0; j < 30; j++) {
+        for(let j = 0; j < numberOfColumns; j++) {
             let coords = [gridSize * j, gridSize * i];
             let obj = new Cell(coords);
             obj.state = 'empty';
@@ -98,7 +112,7 @@ function createMinefield() {
 
 
 function getNewRandomNumber() {
-    let randomNumber = getRandomInt(1, 480);
+    let randomNumber = getRandomInt(1, numberOfCells);
     if(!minesArr.includes(randomNumber) && !safeStartingArea.includes(randomNumber)) {
         minesArr.push(randomNumber);
     } else {
@@ -119,9 +133,9 @@ function createArrOfNumbers(number) {
 }
 
 function recursiveRow(x) {
-    if(x > 30) {
+    if(x > numberOfColumns) {
         counter++;
-        x = x - 30;
+        x = x - numberOfColumns;
         recursiveRow(x);
     } else {
         counter++;
@@ -134,10 +148,10 @@ function getCellRow (val) {
 }
 
 function getCellId (val, row) {
-   if(val <= 30) {
+   if(val <= numberOfColumns) {
        return val;
    } else {
-    return val - ((row -1)  * 30)
+    return val - ((row -1)  * numberOfColumns)
    }
 }
 
@@ -212,13 +226,50 @@ function scanAroundAndPressWhenNoMine(cell) {
             revealAround(cell);
 }
 
-function createRect(cell, color) {
+function createRect(cell, text) {
+    let x = cell.coords[0] + 1;
+    let y = cell.coords[1] + 1;
+    color = '#bdbdbd';
+    let width = gridSize;
+    let height = gridSize;
     ctx.beginPath();
     ctx.fillStyle = color;
-    ctx.fillRect(cell.coords[0] + 1, cell.coords[1] + 1, gridSize, gridSize);
+    ctx.fillRect(x , y, width, height);
     ctx.closePath();
+
+    if(!cell.pressed){
+        ctx.beginPath();
+        ctx.fillStyle = 'grey';
+        ctx.fillRect(x + width - 3, y, 3, height);
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = 'grey';
+        ctx.fillRect(x , y + height - 3, width, 3);
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = '#f4f4f4';
+        ctx.fillRect(x , y, 3, height);
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = '#f4f4f4';
+        ctx.fillRect(x  , y, width, 3);
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = 'grey';
+        ctx.fillRect(x + width - 2, y + 2, 1, 1);
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.fillStyle = 'grey';
+        ctx.fillRect(x + 2, y + height - 2, 1, 1);
+        ctx.closePath();
+    } 
+    ctx.fillStyle = 'black';
+    ctx.font = '15px sans-serif';
+    ctx.fillText(text, x + 7, y + 18);
+    
     ctx.beginPath();
-    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#B26464';
     ctx.strokeRect(cell.coords[0] + 1, cell.coords[1] + 1, gridSize, gridSize);
     ctx.closePath();
 };
@@ -226,31 +277,31 @@ function createRect(cell, color) {
 function drawActive(cell) {
     switch (cell.minesAmount) {
         case 0:
-            createRect(cell, 'grey');
+            createRect(cell, '');
             break;
         case 1:
-            createRect(cell, 'blue');
+            createRect(cell, '1');
             break;
         case 2:
-            createRect(cell, 'green');
+            createRect(cell, '2');
             break;
         case 3:
-            createRect(cell, 'purple');
+            createRect(cell, '3');
             break;
         case 4:
-            createRect(cell, 'yellow');
+            createRect(cell, '4');
             break;
         case 5:
-            createRect(cell, 'black');
+            createRect(cell, '5');
             break;
         case 6:
-            createRect(cell, 'brown');
+            createRect(cell, '6');
             break;
         case 7:
-            createRect(cell, 'coral');
+            createRect(cell, '7');
             break;
         case undefined:
-            createRect(cell, 'red');
+            createRect(cell, 'x');
             break;
     }
 }
@@ -265,7 +316,7 @@ function checkForPressed() {
 
 function drawMinefield() {
     minefield.forEach(line => line.forEach(cell => {
-        createRect(cell, '#f4f4f4');
+        createRect(cell, '');
     }
     ));
 };
@@ -338,8 +389,6 @@ function mineCounter() {
 
 
 function toggleFlag(cell) {
-    console.log(cell);
-
     cell.flagged = !cell.flagged;
 }
 
