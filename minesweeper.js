@@ -9,7 +9,7 @@ let numberOfColumns = 25;
 let numberOfCells = numberOfRows * numberOfColumns;
 
 const gridSize = 23;
-const mines = 65;
+const mines = 100;
 
 
 setCanvasDimensions();
@@ -54,7 +54,7 @@ function play() {
     setMinesLeftIndicator(mines);
     setInterval(() => {
         timer++;
-        timerIndicator.innerText = timer;
+        timerIndicator.innerText = `Time: ${timer}`;
     }, 1000);
 };
 
@@ -227,9 +227,10 @@ function scanAroundAndPressWhenNoMine(cell) {
 }
 
 function createRect(cell, text) {
+    const lineColor = '#948ED9';
     let x = cell.coords[0] + 1;
     let y = cell.coords[1] + 1;
-    color = '#bdbdbd';
+    color = '#C1BEEF';
     let width = gridSize;
     let height = gridSize;
     ctx.beginPath();
@@ -238,39 +239,107 @@ function createRect(cell, text) {
     ctx.closePath();
 
     if(!cell.pressed){
+        ctx.fillStyle = '#CDC9F6';
+        ctx.fillRect(x , y, width, height);
+
         ctx.beginPath();
-        ctx.fillStyle = 'grey';
+        ctx.fillStyle = '#524C9B';
         ctx.fillRect(x + width - 3, y, 3, height);
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.fillStyle = 'grey';
+     
         ctx.fillRect(x , y + height - 3, width, 3);
+        ctx.fillRect(x + width -5, y + height - 5, 4, 4);
+
         ctx.closePath();
         ctx.beginPath();
-        ctx.fillStyle = '#f4f4f4';
+        ctx.fillStyle = '#ffeaea';
         ctx.fillRect(x , y, 3, height);
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.fillStyle = '#f4f4f4';
+        
         ctx.fillRect(x  , y, width, 3);
         ctx.closePath();
         ctx.beginPath();
-        ctx.fillStyle = 'grey';
+        ctx.fillStyle = '#524C9B';
         ctx.fillRect(x + width - 2, y + 2, 1, 1);
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.fillStyle = 'grey';
+        
+        ctx.fillRect(x + 2, y + height - 2, 1, 1);
         ctx.fillRect(x + 2, y + height - 2, 1, 1);
         ctx.closePath();
     } 
-    ctx.fillStyle = 'black';
-    ctx.font = '15px sans-serif';
-    ctx.fillText(text, x + 7, y + 18);
+
+    if(cell.flagged) {
+        ctx.fillStyle = '#524C9B';
+        ctx.fillRect(x + 12 , y + 4, 2, 14);
+        ctx.fillRect(x + 7 , y + 17, 10, 2);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(x + 8 , y + 6, 4, 6);
+        ctx.fillRect(x + 5 , y + 8, 2, 6 );
+    }
+
+    switch (text) {
+        case '1':
+        ctx.fillStyle = '#2D3DFF';
+            break;
+        case '2':
+        ctx.fillStyle = '#1B8538';
+            break;
+        case '3':
+        ctx.fillStyle = '#C70B0B';
+            break;
+        case '4':
+        ctx.fillStyle = '#272553';
+            break;
+    
+        default:
+        ctx.fillStyle = 'black';
+            break;
+    }
+    
+    ctx.font = '28px "VT323", sans-serif';
+    ctx.fillText(text, x + 7, y + 20);
     
     ctx.beginPath();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#B26464';
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = lineColor;
     ctx.strokeRect(cell.coords[0] + 1, cell.coords[1] + 1, gridSize, gridSize);
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.fillStyle = lineColor;
+    // TOP LEFT
+    ctx.fillRect(x, y + height - 3 , 3, 3);
+
+    ctx.fillRect(x + 1, y + height -  5, 1, 1);
+    ctx.fillRect(x + 1, y + height -  4, 1, 1);
+
+    ctx.fillRect(x + 3, y + height - 2, 1, 1);
+    ctx.fillRect(x + 4, y + height - 2, 1, 1);
+
+    // TOP RIGHT
+    // ctx.fillStyle = 'red';
+    
+    ctx.fillRect(x + width - 2, y + 1, 1, 1);
+
+    ctx.fillRect(x + width -  5 , y  + 1, 1, 1);
+    ctx.fillRect(x + width - 4, y + 1, 1, 1);
+
+    ctx.fillRect(x + width - 2, y +  3, 1, 1);
+    ctx.fillRect(x + 4, y + height - 2, 1, 1);
+    
+    ctx.fillRect(x, y + height - 3 , 3, 3);
+
+    ctx.fillRect(x + 1, y + height -  5, 1, 1);
+    ctx.fillRect(x + 1, y + height -  4, 1, 1);
+
+    ctx.fillRect(x + 3, y + height - 2, 1, 1);
+    ctx.fillRect(x + 4, y + height - 2, 1, 1);
+    
+    ctx.fillRect(x, y + height - 3 , 3, 3);
+
+    ctx.fillRect(x + 1, y + height -  5, 1, 1);
+    ctx.fillRect(x + 1, y + height -  4, 1, 1);
+
+    ctx.fillRect(x + 3, y + height - 2, 1, 1);
+    ctx.fillRect(x + 4, y + height - 2, 1, 1);
+    
+    
     ctx.closePath();
 };
 
@@ -394,9 +463,9 @@ function toggleFlag(cell) {
 
 function drawFlag(cell) {
     if(cell.flagged){
-    createRect(cell, 'orange');
+    createRect(cell, '');
     } else if(!cell.flagged) {
-        createRect(cell, '#f4f4f4');
+        createRect(cell, '');
     }
 }
 
@@ -440,5 +509,5 @@ function revealAround(cell) {
 
 
 function setMinesLeftIndicator (val) {
-    minesLeftIndicator.innerText = val;
+    minesLeftIndicator.innerText = `Mines: ${val}`;
 }
