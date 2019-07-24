@@ -17,19 +17,36 @@
     width: 100vw;
 
 }
+.game {
+
+}
 .game-stats {
     display: flex;
     justify-content: space-around;
-    width: 782px;
+    width: 100%;
 }
 
 .timer {
     font-size: 40px;
 }
-.reset-game {
+.button {
     font-family: "VT323", sans-serif;
     font-size: 20px;
     padding: 10px;
+    text-decoration: none;
+    border-style: none;
+    background: none;
+    cursor: pointer;
+    transition: .1s all;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    transform: scale(1.05);
+}
+
+.button:active {
+    transform: translateY(1px);
 }
 
 .mines-left{
@@ -37,7 +54,24 @@
 }
 
 #canvas {
-    /* background-color: white; */
-    /* border: 2px  black; */
     border-radius: 4px;
+}
+
+
+.about-text {
+    width: 500px;
+    margin: 15px auto 0 auto;
+}
+.input {
+    background: none;
+    border-style: none;
+    border-bottom: 2px solid black;
+    font-family: "VT323", sans-serif;
+    font-size: 1.4rem;
+    width: 3rem;
+    padding-left: .6rem;
+}
+
+.mines-amount {
+    color: #828282;
 }

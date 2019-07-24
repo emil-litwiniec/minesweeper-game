@@ -6,21 +6,38 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Minesweeper | Game</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 </head>
 <body>
 
     <main class="main">
-        <div class="game-stats">
-            <p class="timer">Time: 0</p>
-            <button class="reset-game">Reset</button>
-            <p class="mines-left">Mines: 0</p>
-        </div>
-        <canvas id="canvas" width="782" height="444"></canvas>
-    </main>
-    
+        <section class="game">
 
-    <script src="minesweeper.js"></script>
-</body>
-</html>
+                <div class="game-stats">
+                    <p class="timer">Time: 0</p>
+                    <button id="resetGame" class="button">Reset</button>
+                    <p class="mines-left">Mines: 0</p>
+                </div>
+                <canvas id="canvas"></canvas>
+
+                <p class="about-text">
+                    This is my implementation of minesweeper game. 
+                    It's entirely written in Vanilla Javascript. 
+                    Desktop only. Enjoy!
+                </p>
+                    <input type="number" class="input" id='minesAmountInput' name="minesAmount"
+                        min="1" max="200">
+                    <button 
+                    class="button" 
+                    type="button" 
+                    value="minesButton" 
+                    onClick="setMines()"
+                    >Set mines</button>
+                    <p class="mines-amount">Max 200</p>
+        </section>
+            </main>
+            
+        
+            <script src="minesweeper.js"></script>
+        </body>
+        </html>

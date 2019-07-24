@@ -1,17 +1,37 @@
 const canvas = document.getElementById('canvas');
 const timerIndicator = document.querySelector('.timer');
 const minesLeftIndicator = document.querySelector('.mines-left');
+const resetGameBtn = document.getElementById('resetGame');
 
 const ctx = canvas.getContext('2d');
-let numberOfRows = 16;
+let numberOfRows = 20;
 let numberOfColumns = 25;
-
 let numberOfCells = numberOfRows * numberOfColumns;
 
-const gridSize = 23;
-const mines = 100;
-let preventClick = false;
 
+const gridSize = 23;
+let mines = 100;
+let preventClick = false;
+let preventRightClick = true;
+
+function setInitialMinesInput () {
+    document.getElementById(('minesAmountInput')).value = mines;
+}
+setInitialMinesInput();
+
+function setMines() {
+    resetGame();
+    let newMinesAmount = document.getElementById('minesAmountInput').value;
+    if(newMinesAmount > 200) {
+        document.getElementById('minesAmountInput').value = 200;
+        newMinesAmount = 200;
+    } else if(newMinesAmount < 1) {
+        document.getElementById('minesAmountInput').value = 1;
+        newMinesAmount = 1;
+    }
+    mines = newMinesAmount;
+    setMinesLeftIndicator(mines);
+}
 setCanvasDimensions();
 
 
@@ -43,7 +63,6 @@ function createMinefield() {
             rowArr.push(obj);
         }
         minefield.push(rowArr);
-        
     }
 }
 
@@ -57,6 +76,10 @@ let timer = 0;
 createMinefield();
 drawMinefield();
 
+resetGameBtn.addEventListener('click', (e) => {
+    stop();
+    resetGame();
+})
 
 
 canvas.addEventListener('click', (e) => pickCellWithMouse(e));
@@ -67,7 +90,7 @@ window.oncontextmenu = (e) => {
 
 function gameOver() {
     stop();
-    preventClick = true;
+    // preventClick = false;
 
 }
 
@@ -78,15 +101,17 @@ function stop() {
 };
 
 function play() {
-    preventClick = false;
+    preventRightClick = false;
     interval = setInterval(() => {
         timer++;
         timerIndicator.innerText = `Time: ${timer}`;
     }, 1000);
 };
 
+
+
 function resetGame() {
-    stop();
+    clearInterval(interval)
     minefield = [];
     minesArr = [];
     safeStartingArea = [];
@@ -94,7 +119,11 @@ function resetGame() {
     timerIndicator.innerText = `Time: ${timer}`;
 
     createMinefield();
+    setMinesLeftIndicator(mines);
+
     drawMinefield();
+    preventClick = false;
+    preventRightClick = true;
     
 }
 
@@ -135,12 +164,6 @@ function createSafeStartingArea(cell) {
         }
     }
 };
-
-
-
-
-
-
 
 function getNewRandomNumber() {
     let randomNumber = getRandomInt(1, numberOfCells);
@@ -235,8 +258,6 @@ function scanAroundAndCountMines() {
 
 
 function scanAroundAndPressWhenNoMine(cell) {
-        let row = cell.row ;
-        let column = cell.column ;
         let prop = 'minesAmount';
         let propVal = 0;
         cell.pressed = true;
@@ -257,7 +278,192 @@ function scanAroundAndPressWhenNoMine(cell) {
             revealAround(cell);
 }
 
+
+
+function checkForPressed() {
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.pressed === true){
+            drawActive(cell);
+        }
+    }))
+}
+
+function drawMinefield() {
+    minefield.forEach(line => line.forEach(cell => {
+        createRect(cell, '');
+    }
+    ));
+};
+
+
+
+const ifNoMines = () => minefield.every(row => row.every(cell => cell.state == 'empty'));
+
+
+
+
+function pickCellWithMouse(e) {
+
+    if(preventClick) {
+        return;
+    }
+    const mouseX = e.x; 
+    const mouseY = e.y; 
+    const canvasX = canvasPosition.x;
+    const canvasY = canvasPosition.y;
+    let cellX = mouseX - canvasX;
+    let cellY = mouseY - canvasY;
+
+    minefield.forEach(row => row.forEach(cell => {
+        if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && 
+        cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
+
+            if(ifNoMines()) {
+                createSafeStartingArea(cell);
+                startGame();
+            }
+            if(!cell.flagged){
+            revealIfEmpty(cell);
+            checkForPressed();
+            };
+        }
+    }))
+};
+
+function pickCellWithMouseRightClick(e) {
+    if(preventRightClick) {
+        return
+    }
+    const mouseX = e.x; 
+    const mouseY = e.y; 
+    const canvasX = canvasPosition.x;
+    const canvasY = canvasPosition.y;
+    let cellX = mouseX - canvasX;
+    let cellY = mouseY - canvasY;
+
+    minefield.forEach(row => row.forEach(cell => {
+        if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
+
+            if(!cell.pressed){
+            toggleFlag(cell);
+            
+            setMinesLeftIndicator(mineCounter(cell));
+            drawFlag(cell);
+            isGameWon();
+            
+            };
+        }
+    }))
+
+};
+
+function mineCounter() {
+     let flagCounter = 0;
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.flagged) {
+            flagCounter++;
+        }
+    }));
+
+    let minesLeft = mines - flagCounter;
+    return minesLeft;
+}
+
+
+
+function toggleFlag(cell) {
+    cell.flagged = !cell.flagged;
+}
+function drawFlag(cell) {
+    if(cell.flagged){
+    createRect(cell, '');
+    } else if(!cell.flagged) {
+        createRect(cell, '');
+    }
+}
+
+function pressAllMines() {
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.state === 'mine') {
+            cell.pressed = true;
+        }
+    }))
+};
+
+
+
+function revealIfEmpty(cell) {
+    if(!(cell.state === 'empty')) {
+        pressAllMines();
+        drawAllMines();
+        preventClick = true;
+        alert('You loose!')
+        gameOver();
+    } else if (cell.state === 'empty' && cell.minesAmount === 0) {
+        scanAroundAndPressWhenNoMine(cell);
+        isGameWon();
+    } else if (cell.state === 'empty' && cell.minesAmount > 0) {
+        drawActive(cell);
+        cell.pressed = true;
+        isGameWon();
+    }
+}
+
+function drawAllMines() {
+    minefield.forEach(row => row.forEach(cell => {
+        if(cell.state === 'mine') {
+            drawActive(cell);
+        }
+    }))
+}
+
+function revealAround(cell) {
+    cell.pressed = true;
+
+    for(let i = cell.row - 1; i <= cell.row + 1 ; i++) {
+        if(minefield[i-1]) {
+            for(let j = cell.column - 1; j <= cell.column + 1; j++) {
+                if(minefield[i-1][j-1]) {
+                    minefield[i-1][j-1]['pressed'] = true;
+                    }
+                }
+        }
+    }
+};
+
+
+
+function setMinesLeftIndicator (val) {
+    minesLeftIndicator.innerText = `Mines: ${val}`;
+}
+
+
+function isGameWon () {
+    function countPressedAndFlaggedCells() {
+        let numberOfPressedCells = 0;
+        let numberOfFlaggedCells = 0;
+        minefield.forEach(row => row.forEach(cell => {
+            if(cell.pressed) {
+                numberOfPressedCells++;
+            } 
+            if(cell.flagged) {
+                numberOfFlaggedCells++;
+            }
+        }));
+        return [numberOfPressedCells, numberOfFlaggedCells];
+    }
+
+    const [numberOfPressedCells, numberOfFlaggedCells] = countPressedAndFlaggedCells();
+
+    if(numberOfPressedCells + numberOfFlaggedCells == numberOfCells) {
+        gameOver();
+        alert('You win!')
+    } 
+
+}
+
 function createRect(cell, text) {
+    // STYLING 
     const lineColor = '#948ED9';
     let x = cell.coords[0] + 1;
     let y = cell.coords[1] + 1;
@@ -437,160 +643,4 @@ function drawActive(cell) {
             createRect(cell, '');
             break;
     }
-}
-
-function checkForPressed() {
-    minefield.forEach(row => row.forEach(cell => {
-        if(cell.pressed === true){
-            drawActive(cell);
-        }
-    }))
-}
-
-function drawMinefield() {
-    minefield.forEach(line => line.forEach(cell => {
-        createRect(cell, '');
-    }
-    ));
-};
-
-
-
-const ifNoMines = () => minefield.every(row => row.every(cell => cell.state == 'empty'));
-
-
-
-
-function pickCellWithMouse(e) {
-
-    if(preventClick) {
-        return;
-    }
-    const mouseX = e.x; 
-    const mouseY = e.y; 
-    const canvasX = canvasPosition.x;
-    const canvasY = canvasPosition.y;
-    let cellX = mouseX - canvasX;
-    let cellY = mouseY - canvasY;
-
-    minefield.forEach(row => row.forEach(cell => {
-        if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && 
-        cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
-
-            if(ifNoMines()) {
-                createSafeStartingArea(cell);
-                startGame();
-            }
-            if(!cell.flagged){
-            revealIfEmpty(cell);
-            checkForPressed();
-            };
-        }
-    }))
-};
-
-function pickCellWithMouseRightClick(e) {
-    if(preventClick) {
-        return;
-    }
-    const mouseX = e.x; 
-    const mouseY = e.y; 
-    const canvasX = canvasPosition.x;
-    const canvasY = canvasPosition.y;
-    let cellX = mouseX - canvasX;
-    let cellY = mouseY - canvasY;
-
-    minefield.forEach(row => row.forEach(cell => {
-        if(cellX >= cell.coords[0] && cellX <= cell.coords[0] + gridSize && cellY >=cell.coords[1] && cellY <= cell.coords[1] + gridSize) {
-
-            if(!cell.pressed){
-            toggleFlag(cell);
-            
-            setMinesLeftIndicator(mineCounter(cell));
-            drawFlag(cell);
-            };
-        }
-    }))
-
-};
-
-function mineCounter() {
-     let flagCounter = 0;
-    minefield.forEach(row => row.forEach(cell => {
-        if(cell.flagged) {
-            flagCounter++;
-        }
-    }));
-
-    let minesLeft = mines - flagCounter;
-    return minesLeft;
-}
-
-
-
-function toggleFlag(cell) {
-    cell.flagged = !cell.flagged;
-}
-
-function drawFlag(cell) {
-    if(cell.flagged){
-    createRect(cell, '');
-    } else if(!cell.flagged) {
-        createRect(cell, '');
-    }
-}
-
-function pressAllMines() {
-    minefield.forEach(row => row.forEach(cell => {
-        if(cell.state === 'mine') {
-            cell.pressed = true;
-        }
-    }))
-};
-
-
-
-function revealIfEmpty(cell) {
-    if(!(cell.state === 'empty')) {
-        pressAllMines();
-        drawAllMines();
-        gameOver();
-        // setTimeout(() => {
-        //     alert('BOOOOOOOOOOOOOOOOOOOOM! YOU DIE.');
-        // }, 100);
-    } else if (cell.state === 'empty' && cell.minesAmount === 0) {
-        scanAroundAndPressWhenNoMine(cell);
-    } else if (cell.state === 'empty' && cell.minesAmount > 0) {
-        drawActive(cell);
-        cell.pressed = true;
-    }
-}
-
-function drawAllMines() {
-    minefield.forEach(row => row.forEach(cell => {
-        if(cell.state === 'mine') {
-            drawActive(cell);
-        }
-    }))
-}
-
-function revealAround(cell) {
-    cell.pressed = true;
-
-    for(let i = cell.row - 1; i <= cell.row + 1 ; i++) {
-        if(minefield[i-1]) {
-            for(let j = cell.column - 1; j <= cell.column + 1; j++) {
-                if(minefield[i-1][j-1]) {
-                    minefield[i-1][j-1]['pressed'] = true;
-                    }
-                }
-        }
-    }
-};
-
-
-
-
-function setMinesLeftIndicator (val) {
-    minesLeftIndicator.innerText = `Mines: ${val}`;
 }
