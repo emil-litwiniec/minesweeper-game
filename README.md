@@ -1,15 +1,11 @@
-<!-- ![Logo of the project](https://raw.githubusercontent.com/jehna/readme-best-practices/master/sample-logo.png) -->
 
 # Minesweeper
-> Additional information or tagline
 
 A simple implementation of classic minesweeper game. Written entirely in Vanilla Javascript using Canvas API. 
 The styling is inspired by retro pixel games.
 
 ## Installing / Getting started
 
-A quick introduction of the minimal setup you need to get a hello world up &
-running.
 
 ```shell
 git clone git@github.com:EmilTheSadCat/minesweeper_game.git
@@ -22,6 +18,8 @@ Clone the repository and simply open index.html in your browser.
 Click on the board and the game will start!
 
 If you decide to change amount of mines, the game will automatically reset.
+
+Beware, desktop only!
 
 
 ## Links
