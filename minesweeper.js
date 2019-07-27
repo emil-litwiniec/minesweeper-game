@@ -73,7 +73,6 @@ function play() {
 
 //-------------------  BASIC GAME FUNCTIONS  -------------------//
 
-
 function setInitialMinesInput() {
   document.getElementById('minesAmountInput').value = mines;
 }
