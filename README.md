@@ -21,6 +21,10 @@ If you decide to change amount of mines, the game will automatically reset.
 
 Beware, desktop only!
 
+## Screenshot
+
+![Screenshot from Minesweeper](screenshot_1.png)
+
 
 ## Links
 
