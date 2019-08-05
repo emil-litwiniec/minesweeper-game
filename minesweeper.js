@@ -222,8 +222,8 @@ function revealIfEmpty(cell) {
     pressAllMines();
     drawAllMines();
     preventClick = true;
-    alert('You loose!');
     gameOver();
+    setTimeout(() => alert('You loose!'), 100);
   } else if (cell.state === 'empty' && cell.minesAmount === 0) {
     scanAroundAndPressWhenNoMine(cell);
     isGameWon();
