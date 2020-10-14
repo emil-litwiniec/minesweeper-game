@@ -1,0 +1,34 @@
+{
+    "name": "minesweeper-game",
+    "version": "1.0.0",
+    "description": "A simple implementation of classic minesweeper game. Written entirely in Vanilla Javascript using Canvas API.  The styling is inspired by retro pixel games.",
+    "main": "src/index.html",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "parcel serve ./src/index.html",
+        "build": "parcel build ./src/index.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/EmilTheSadCat/minesweeper_game.git"
+    },
+    "targets": {
+        "default": {
+            "engines": {
+                "browsers": "> 0.25%"
+            },
+            "distDir": "dist",
+            "publicUrl": ".",
+            "sourceMap": false
+        }
+    },
+    "author": "Emil Litwiniec",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/EmilTheSadCat/minesweeper_game/issues"
+    },
+    "homepage": "https://github.com/EmilTheSadCat/minesweeper_game#readme",
+    "devDependencies": {
+        "parcel": "^2.0.0-beta.1"
+    }
+}
