@@ -8,9 +8,11 @@ The styling is inspired by retro pixel games.
 
 
 ```shell
-git clone git@github.com:EmilTheSadCat/minesweeper_game.git
-cd minesweeper_game
-open index.html
+npm install 
+
+npm start    # <--- run development server
+
+npm run build   # <--- create production build in ./dist directory
 ```
 
 Clone the repository and simply open index.html in your browser.
