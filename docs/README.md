@@ -15,7 +15,6 @@ npm start    # <--- run development server
 npm run build   # <--- create production build in ./dist directory
 ```
 
-Clone the repository and simply open index.html in your browser.
 
 Click on the board and the game will start!
 
@@ -31,7 +30,7 @@ Beware, desktop only!
 ## Links
 
 - Live: https://distracted-kalam-ae17b0.netlify.com/
-- Repository: https://github.com/EmilTheSadCat/minesweeper_game
+- Repository: https://github.com/EmilTheSadCat/minesweeper-game
 - My other games:
   - Tetris: https://github.com/EmilTheSadCat/tetris-game
 
