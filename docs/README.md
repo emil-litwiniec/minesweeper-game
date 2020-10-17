@@ -1,7 +1,7 @@
 
 # Minesweeper
 
-A simple implementation of classic minesweeper game. Written entirely in Vanilla Javascript using Canvas API. 
+A simple implementation of classic minesweeper game. Written entirely in vanilla JavaScript using Canvas API. 
 The styling is inspired by retro pixel games.
 
 ## Installing / Getting started

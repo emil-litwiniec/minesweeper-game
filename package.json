@@ -1,7 +1,7 @@
 {
     "name": "minesweeper-game",
     "version": "1.0.0",
-    "description": "A simple implementation of classic minesweeper game. Written entirely in Vanilla Javascript using Canvas API.  The styling is inspired by retro pixel games.",
+    "description": "A simple implementation of classic minesweeper game. Written entirely in vanilla JavaScript using Canvas API.  The styling is inspired by retro pixel games.",
     "main": "src/index.html",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
