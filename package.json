@@ -29,6 +29,6 @@
     },
     "homepage": "https://github.com/EmilTheSadCat/minesweeper_game#readme",
     "devDependencies": {
-        "parcel": "^2.0.0-beta.1"
+        "parcel": "^2.8.2"
     }
 }
